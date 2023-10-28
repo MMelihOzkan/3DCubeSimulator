@@ -19,8 +19,6 @@ class Simulator:
         self.rotate_speed = 100
         self.resize_speed = 1
         self.cube = Cube("3Dcube", 300, (0, 125, 0), (255, 0, 0), 2, (self.screen.get_width() / 2, self.screen.get_height() / 2), self.screen)
-        self.cube1 = Cube("3Dcube", 150, (0, 125, 0), (255, 0, 0), 2, (self.screen.get_width() / 2, self.screen.get_height() / 2), self.screen)
-
 
     def handle_events(self):
         for event in py.event.get():
@@ -32,10 +30,8 @@ class Simulator:
                 self.cube.recolor()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
                 self.cube.auto_animate = not self.cube.auto_animate
-                self.cube1.auto_animate = not self.cube1.auto_animate
             if event.type == pygame.KEYDOWN and event.key == pygame.K_o:
                 self.cube.strobe_color = not self.cube.strobe_color
-                self.cube1.strobe_color = not self.cube1.strobe_color
 
         key = py.key.get_pressed()
         if key[pygame.K_d]:
@@ -57,19 +53,32 @@ class Simulator:
 
     def update(self):
         self.cube.update(self.dt)
-        self.cube1.update(self.dt)
 
     def render(self):
         self.screen.fill((0, 0, 0))
 
         self.cube.render()
-        self.cube1.render()
 
         self.cube.debug()
+
         font = py.font.Font(None, 36)
+        font1= py.font.Font(None, 24)
         fps_text = font.render(f"FPS: {round(self.clock.get_fps())}", True, (255, 0, 0))
+        control_text = font1.render("CONTROLS:", True, (255, 0, 0))
+        yaw_text = font1.render("YAW: A D", True, (255, 0, 0))
+        pitch_text = font1.render("PITCH: W S", True, (255, 0, 0))
+        roll_text = font1.render("ROLL: LEFT RIGHT", True, (255, 0, 0))
+        resize_text = font1.render("RESIZE: K L", True, (255, 0, 0))
+        auto_text = font1.render("AUTO: P", True, (255, 0, 0))
+        strobe_text = font1.render("STROBE: O", True, (255, 0, 0))
         self.screen.blit(fps_text, (self.screen.get_width() - 160, 20))
-        pass
+        self.screen.blit(control_text, (self.screen.get_width() - 160, 110))
+        self.screen.blit(yaw_text, (self.screen.get_width() - 160, 130))
+        self.screen.blit(pitch_text, (self.screen.get_width() - 160, 150))
+        self.screen.blit(roll_text, (self.screen.get_width() - 160, 170))
+        self.screen.blit(resize_text, (self.screen.get_width() - 160, 190))
+        self.screen.blit(auto_text, (self.screen.get_width() - 160, 210))
+        self.screen.blit(strobe_text, (self.screen.get_width() - 160, 230))
 
     def clean(self):
         py.display.flip()
