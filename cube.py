@@ -16,6 +16,9 @@ class Cube:
         self.x_rotation = 0
         self.y_rotation = 0
         self.z_rotation = 0
+        self.x_pos = 0
+        self.y_pos = 0
+        self.z_pos = 0
         # size adjust as "sa"
         self.sa = 1
         self.auto_animate = False
@@ -48,7 +51,6 @@ class Cube:
 
         self.lines = ((0, 1), (0, 2), (0, 4), (3, 1), (3, 2), (3, 7), (5, 1), (5, 4), (5, 7), (6, 2), (6, 4), (6, 7))
         self.polygons = ((0,1,3,2),(4,5,7,6),(0,4,5,1),(1,5,7,3),(2,3,7,6),(0,4,6,2))
-        print(f"polygon: {self.polygons[0][3]}")
         self.colors = []
         for i in range(12):
             self.colors.append((random.randint(150, 255), random.randint(150, 255), random.randint(150, 255)))
@@ -73,13 +75,15 @@ class Cube:
                            (self.pv[line[1]][0] + self.pos.x, self.pv[line[1]][1] + self.pos.y))
             count += 1
 
+        # py.draw.aaline(self.screen, self.border_color,(self.pos.x, self.pos.y),(self.pv[0][0] + self.pos.x, self.pv[0][1] + self.pos.y))
+
     def update(self, dt):
         self.auto(dt)
         c, b, a = self.x_rotation * self.r, self.y_rotation * self.r, self.z_rotation * self.r
         for i in range(8):
-            self.pv[i][0] = self.sa * (self.v[i][0] * (m.cos(a) * m.cos(b)) + self.v[i][1] * (m.cos(a) * m.sin(b) * m.sin(c) - m.sin(a) * m.cos(c)) + self.v[i][2] * (m.cos(a) * m.sin(b) * m.cos(c) + m.sin(a) * m.sin(c)))
-            self.pv[i][1] = self.sa * (self.v[i][0] * (m.sin(a) * m.cos(b)) + self.v[i][1] * (m.sin(a) * m.sin(b) * m.sin(c) + m.cos(a) * m.cos(c)) + self.v[i][2] * (m.sin(a) * m.sin(b) * m.cos(c) - m.cos(a) * m.sin(c)))
-            self.pv[i][2] = self.sa * (self.v[i][0] * (-m.sin(b)) + self.v[i][1] * (m.cos(b) * m.sin(c)) + self.v[i][2] * (m.cos(b) * m.cos(c)))
+            self.pv[i][0] = self.x_pos + (self.sa * (self.v[i][0] * (m.cos(a) * m.cos(b)) + self.v[i][1] * (m.cos(a) * m.sin(b) * m.sin(c) - m.sin(a) * m.cos(c)) + self.v[i][2] * (m.cos(a) * m.sin(b) * m.cos(c) + m.sin(a) * m.sin(c))))
+            self.pv[i][1] = self.y_pos + (self.sa * (self.v[i][0] * (m.sin(a) * m.cos(b)) + self.v[i][1] * (m.sin(a) * m.sin(b) * m.sin(c) + m.cos(a) * m.cos(c)) + self.v[i][2] * (m.sin(a) * m.sin(b) * m.cos(c) - m.cos(a) * m.sin(c))))
+            self.pv[i][2] = self.z_pos + (self.sa * (self.v[i][0] * (-m.sin(b)) + self.v[i][1] * (m.cos(b) * m.sin(c)) + self.v[i][2] * (m.cos(b) * m.cos(c))))
 
     def debug(self):
         font = py.font.Font(None, 28)
@@ -89,6 +93,8 @@ class Cube:
         self.screen.blit(x_text, (self.screen.get_width() - 160, 45))
         self.screen.blit(y_text, (self.screen.get_width() - 160, 65))
         self.screen.blit(z_text, (self.screen.get_width() - 160, 85))
+
+
 
     def rotate_x(self, direction):
         self.x_rotation += direction
@@ -114,6 +120,15 @@ class Cube:
     def resize(self, amount):
         self.sa += amount
 
+    def move_x(self, amount):
+        self.x_pos += amount
+
+    def move_y(self, amount):
+        self.y_pos += amount
+
+    def move_z(self, amount):
+        self.z_pos += amount
+
     def recolor(self):
         self.color = (random.randint(0,255),random.randint(0,255),random.randint(0,255))
         self.border_color = (random.randint(0,255),random.randint(0,255),random.randint(0,255))
@@ -128,14 +143,11 @@ class Cube:
                 self.sa += 1
             self.timer_cooldown = False
             self.recolor()
-            print("random variable")
             self.random_x = random.randint(-5, 5)
             self.random_y = random.randint(-5, 5)
             self.random_z = random.randint(-5, 5)
 
-        print(py.time.get_ticks() - self.auto_animate_random_timer)
         if py.time.get_ticks() - self.auto_animate_random_timer > 1000:
-            print("timer reset")
             self.timer_cooldown = True
             self.auto_animate_random_timer = py.time.get_ticks()
 
